@@ -35,7 +35,7 @@ WORKDIR /usr/local/$PROJECT
 
 RUN apt-get update  && apt-get install ca-certificates -y
 
-COPY  --from=builder /data/go/src/$PROJECT/bin/electrumx-proxy-go /usr/local/$PROJECT/
+COPY  --from=builder /data/go/src/$PROJECT/electrumx-proxy-go /usr/local/$PROJECT/
 
 ADD ./config.toml /usr/local/$PROJECT/config.toml
 
