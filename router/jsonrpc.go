@@ -32,12 +32,13 @@ type addressUtxoResponse struct {
 
 func GetAddressUtxo(c *gin.Context) {
 	address := c.Param("address")
-
-	var request addressUtxoRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	/*
+		var request addressUtxoRequest
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	*/
 	client, err := electrum.NewClientTCP(context.Background(), "node.sathub.io:60601")
 
 	if err != nil {
