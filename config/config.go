@@ -1,11 +1,13 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
+
+	"github.com/BurntSushi/toml"
 )
 
 type Config struct {
+	WssEnable       bool
 	ElectrumxServer string
 	ServerAddress   string
 }
