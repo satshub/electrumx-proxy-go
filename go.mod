@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/itsjamie/gin-cors v0.0.0-20220228161158-ef28d3d2a0a8
-	github.com/satshub/go-bitcoind v0.0.0-20241028103804-4c51d14c1f6f
+	github.com/satshub/go-bitcoind v0.0.1
 )
 
 require (
