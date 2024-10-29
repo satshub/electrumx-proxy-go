@@ -9,7 +9,7 @@ import (
 
 func main() {
 	config.InitConf()
-	ws.InitWebSocket(config.Conf.ElectrumxServer)
+	go ws.InitWebSocket(config.Conf.ElectrumxServer)
 	api := router.InitMasterRouter()
 	err := api.Run(config.Conf.ServerAddress)
 	if err != nil {

@@ -4,13 +4,14 @@ import (
 	"electrumx-proxy-go/common"
 	"electrumx-proxy-go/ws"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	cors "github.com/itsjamie/gin-cors"
 	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 var UniqueID uint32
@@ -35,6 +36,7 @@ func InitMasterRouter() *gin.Engine {
 	r.POST("/proxy/health", HandleHealth)
 	r.GET("/proxy/:method", HandleProxyGet)
 	r.POST("/proxy/:method", HandleProxyPost)
+	r.GET("/api/address/:address/utxo", GetAddressUtxo)
 	return r
 }
 
