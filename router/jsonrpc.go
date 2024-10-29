@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/satshub/go-bitcoind/go-electrum/electrum"
@@ -51,8 +52,17 @@ func GetAddressUtxo(c *gin.Context) {
 
 	response := make([]addressUtxoResponse, 0)
 	var spentAmount uint64
+
+	uintValue, err := strconv.ParseUint(c.Query("amount"), 10, 0)
+	if err != nil {
+		log.Fatal("convert amount error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"convert amount error": err.Error()})
+		return
+
+	}
+
 	for _, utxo := range utxos {
-		if spentAmount >= uint64(request.Amount) {
+		if spentAmount >= uint64(uintValue) {
 			break
 		}
 

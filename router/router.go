@@ -24,7 +24,7 @@ func InitMasterRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
-		Methods:         "GET, PUT, POST, DELETE",
+		Methods:         "GET, POST",
 		RequestHeaders:  "Origin, Content-Type",
 		MaxAge:          50 * time.Second,
 		Credentials:     false,
