@@ -15,11 +15,19 @@ type addressUtxoRequest struct {
 	Amount int  `json:"amount,omitempty"`
 }
 
+type UtxoStatus struct {
+	BlockHeight uint32 `json:"block_height"`
+	BlockHash   string `json:"block_hash"`
+	BlockTime   uint64 `json:"block_time"`
+	Confirmed   bool   `json:"confirmed"`
+}
+
 type addressUtxoResponse struct {
-	Height uint32 `json:"height"`
-	Value  uint64 `json:"value"`
-	TxId   string `json:"txid"`
-	Vout   uint32 `json:"vout"`
+	Height uint32     `json:"height"`
+	Value  uint64     `json:"value"`
+	TxId   string     `json:"txid"`
+	Vout   uint32     `json:"vout"`
+	Status UtxoStatus `json:"status"`
 }
 
 func GetAddressUtxo(c *gin.Context) {
@@ -67,12 +75,24 @@ func GetAddressUtxo(c *gin.Context) {
 		}
 
 		log.Printf("utxo: %+v", utxo)
+		tx, err := client.GetTransaction(context.Background(), utxo.Hash)
+		if err != nil {
+			continue
+		}
+		if tx.Confirmations == 0 {
+			continue
+		}
 		response = append(response, addressUtxoResponse{
 			Height: utxo.Height,
 			Value:  utxo.Value,
 			TxId:   utxo.Hash,
 			Vout:   utxo.Position,
-		})
+			Status: UtxoStatus{
+				BlockHeight: utxo.Height,
+				BlockHash:   tx.Blockhash,
+				BlockTime:   tx.Blocktime,
+				Confirmed:   true}})
+
 		spentAmount += utxo.Value
 	}
 
