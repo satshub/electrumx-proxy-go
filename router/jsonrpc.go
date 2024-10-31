@@ -173,3 +173,26 @@ func GetAddressUtxo(c *gin.Context) {
 	}
 	GetAddressUtxoWithAmount(c)
 }
+
+func GetRawTransaction(c *gin.Context) {
+	txid := c.Param("txid")
+	if txid == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "txid is required"})
+		return
+	}
+
+	client, err := electrum.NewClientTCP(context.Background(), "node.sathub.io:60601")
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	rawTx, err := client.GetRawTransaction(context.Background(), txid)
+	if err != nil {
+		log.Fatal("get raw tx error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"get rawTx error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, rawTx)
+}

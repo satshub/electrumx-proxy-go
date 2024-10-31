@@ -37,6 +37,7 @@ func InitMasterRouter() *gin.Engine {
 	r.GET("/proxy/:method", HandleProxyGet)
 	r.POST("/proxy/:method", HandleProxyPost)
 	r.GET("/api/address/:address/utxo", GetAddressUtxo)
+	r.GET("/api/tx/:txid/raw", GetRawTransaction)
 	return r
 }
 
