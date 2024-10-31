@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"electrumx-proxy-go/common/log"
+	"encoding/hex"
 	"net/http"
 	"strconv"
 
@@ -187,11 +188,24 @@ func GetRawTransaction(c *gin.Context) {
 		return
 	}
 
-	rawTx, err := client.GetRawTransaction(context.Background(), txid)
+	txHex, err := client.GetRawTransaction(context.Background(), txid)
 	if err != nil {
 		log.Error("get raw tx error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error() + "...get raw tx error"})
 		return
 	}
-	c.JSON(http.StatusOK, rawTx)
+
+	// 将 Hex 字符串转换为 []byte
+	rawTx, err := hex.DecodeString(txHex)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode transaction"})
+		return
+	}
+
+	// 设置响应头
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename=\"raw\"")
+
+	// 返回二进制数据
+	c.Data(http.StatusOK, "application/octet-stream", rawTx)
 }
