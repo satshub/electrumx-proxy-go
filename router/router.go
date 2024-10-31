@@ -2,9 +2,9 @@ package router
 
 import (
 	"electrumx-proxy-go/common"
+	"electrumx-proxy-go/common/log"
 	"electrumx-proxy-go/ws"
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -106,7 +106,7 @@ func HandleHealth(c *gin.Context) {
 			c.JSON(http.StatusOK, ResponseHealth{Success: true, Health: false})
 		}
 	case <-time.After(5 * time.Second):
-		log.Printf("<= id: %d, check health timeout, no response received after 5 seconds", id)
+		log.Info("<= id: %d, check health timeout, no response received after 5 seconds", id)
 		ws.CallbacksLock.Lock()
 		delete(ws.Callbacks, id)
 		ws.CallbacksLock.Unlock()

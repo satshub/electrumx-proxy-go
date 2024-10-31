@@ -2,7 +2,7 @@ package router
 
 import (
 	"context"
-	"log"
+	"electrumx-proxy-go/common/log"
 	"net/http"
 	"strconv"
 
@@ -21,7 +21,6 @@ type UtxoStatus struct {
 	BlockTime   uint64 `json:"block_time"`
 	Confirmed   bool   `json:"confirmed"`
 }
-
 type addressUtxoResponse struct {
 	Height uint32     `json:"height"`
 	Value  uint64     `json:"value"`
@@ -51,29 +50,29 @@ func GetAddressUtxoWithoutAmount(c *gin.Context) {
 
 	client, err := electrum.NewClientTCP(context.Background(), "node.sathub.io:60601")
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	scriptHash, err := electrum.AddressToElectrumScriptHash(address)
 	if err != nil {
-		log.Fatal("address to script hash error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"connect electrum error": err.Error()})
+		log.Error("address to script hash error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	utxos, err := client.ListUnspent(context.Background(), scriptHash)
 	if err != nil {
-		log.Fatal("list unspent error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"list unspent error": err.Error()})
+		log.Error("list unspent error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	response := make([]mempoolAddressUtxoResponse, 0)
 
 	for _, utxo := range utxos {
-		log.Printf("utxo: %+v", utxo)
+		log.Infof("utxo: %+v", utxo)
 		tx, err := client.GetTransaction(context.Background(), utxo.Hash)
 		if err != nil {
 			continue
@@ -100,22 +99,22 @@ func GetAddressUtxoWithAmount(c *gin.Context) {
 
 	client, err := electrum.NewClientTCP(context.Background(), "node.sathub.io:60601")
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	scriptHash, err := electrum.AddressToElectrumScriptHash(address)
 	if err != nil {
-		log.Fatal("address to script hash error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"connect electrum error": err.Error()})
+		log.Error("address to script hash error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	utxos, err := client.ListUnspent(context.Background(), scriptHash)
 	if err != nil {
-		log.Fatal("list unspent error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"list unspent error": err.Error()})
+		log.Error("list unspent error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -124,8 +123,8 @@ func GetAddressUtxoWithAmount(c *gin.Context) {
 
 	uintValue, err := strconv.ParseUint(c.Query("amount"), 10, 0)
 	if err != nil {
-		log.Fatal("convert amount error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"convert amount error": err.Error()})
+		log.Error("convert amount error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 
 	}
@@ -135,7 +134,7 @@ func GetAddressUtxoWithAmount(c *gin.Context) {
 			break
 		}
 
-		log.Printf("utxo: %+v", utxo)
+		log.Infof("utxo: %+v", utxo)
 		tx, err := client.GetTransaction(context.Background(), utxo.Hash)
 		if err != nil {
 			continue
@@ -183,15 +182,15 @@ func GetRawTransaction(c *gin.Context) {
 
 	client, err := electrum.NewClientTCP(context.Background(), "node.sathub.io:60601")
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	rawTx, err := client.GetRawTransaction(context.Background(), txid)
 	if err != nil {
-		log.Fatal("get raw tx error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"get rawTx error": err.Error()})
+		log.Error("get raw tx error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error() + "...get raw tx error"})
 		return
 	}
 	c.JSON(http.StatusOK, rawTx)
